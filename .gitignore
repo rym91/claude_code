@@ -1,0 +1,8 @@
+pinterest/secrets/*
+!pinterest/secrets/.gitkeep
+!pinterest/secrets/*.example
+pinterest/out/*
+!pinterest/out/.gitkeep
+__pycache__/
+*.pyc
+.venv/
