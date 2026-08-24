@@ -144,6 +144,22 @@ def refresh(token: dict | None = None) -> dict:
     return _save(fresh)
 
 
+def save_manual_token(token: str, expires_in: int = 30 * 86_400, scope: str = "") -> dict:
+    """Маркер, выданный кнопкой «Создать маркер» в настройках приложения.
+
+    Обновить его нельзя — когда истечёт, выдаётся новый той же кнопкой.
+    """
+    return _save(
+        {
+            "access_token": token.strip(),
+            "token_type": "bearer",
+            "expires_in": expires_in,
+            "scope": scope or ",".join(READ_SCOPES + ["catalogs:read"]),
+            "source": "manual_trial_token",
+        }
+    )
+
+
 def client_credentials(scopes: list[str] | None = None) -> dict:
     token = _post_token(
         {
@@ -176,4 +192,9 @@ def access_token() -> str:
     expires_at = token.get("obtained_at", 0) + token.get("expires_in", 0)
     if token.get("refresh_token") and expires_at - time.time() < 86_400:
         token = refresh(token)
+    elif not token.get("refresh_token") and expires_at < time.time():
+        raise PinterestAuthError(
+            "маркер истёк, а refresh_token у него нет — выдай новый кнопкой "
+            "«Создать маркер» и сохрани: python -m pinterest.scripts.login --token=<маркер>"
+        )
     return token["access_token"]

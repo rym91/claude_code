@@ -16,6 +16,7 @@ import json
 import sys
 from pathlib import Path
 
+from pinterest.pin_api.cli import run
 from pinterest.pin_api.client import PinterestAPIError, PinterestClient
 
 OUT = Path(__file__).resolve().parent.parent / "out"
@@ -112,4 +113,4 @@ def main(argv: list[str]) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    run(main, sys.argv[1:])
